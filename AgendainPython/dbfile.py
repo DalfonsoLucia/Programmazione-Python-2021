@@ -1,6 +1,7 @@
 import json
-import pyfiglet
-#from termcolor import colored
+# import pyfiglet
+# from pyfiglet import figlet_format
+# from termcolor import colored
 import os
 
 def inserisci():
@@ -9,12 +10,17 @@ def inserisci():
     ana['cognome'] = input('Cognome: ')
     ana['email'] = input('Email: ')
     ana['telefono'] = input('Telefono: ')
-    lista = read_data()
-    lista.append(ana)
-    save_data(lista)
+    listaJson = read_data()
+    if len(listaJson) == 0:
+        listaJson = {"nominativo" : []}
+    listaJson['nominativo'].append(ana)
+    save_data(listaJson)
 
 def stampa():
-    lista = read_data()
+    listaJson = read_data()
+    if len(listaJson) == 0:
+        return []
+    lista = listaJson['nominativo']
     count = 0
     for el in lista:
         print(str(count),str(el))
@@ -23,7 +29,28 @@ def stampa():
     return lista
 
 def modifica():
-    pass
+    listaJson = read_data()
+    if len(listaJson) == 0:
+        return []
+    ana = listaJson['nominativo']
+    count = 0
+
+  
+    for el in ana:
+        print(str(count),str(el))
+        count += 1
+    n = int(input("\n\nIndica il contatto da modificare"))
+    if n > len(ana) -1:
+        return []
+    nominativo = ana[n]
+    nominativo['nome'] = input('Nome: ')
+    nominativo['cognome'] = input('Cognome: ')
+    nominativo['email'] = input('Email: ')        
+    nominativo['telefono'] = input('telefono: ')        
+    
+    print(ana)
+    save_data(listaJson)
+
 
 def cancella():
     lst = stampa()
@@ -33,9 +60,9 @@ def cancella():
     return True
 
 def main_screen():
-    result = pyfiglet.figlet_format("Agenda", font="slant")
+    # result = pyfiglet.figlet_format("Agenda", font="slant")
     #print(colored(result,"red"))
-    print(result)
+    print("agenda")
 
 def save_data(dt):
     fp = open('agenda.dat', 'w')
@@ -46,7 +73,9 @@ def read_data():
     fp = open('agenda.dat', 'r')
     dati_agenda = fp.read()
     fp.close()
-    return json.loads(dati_agenda)
+    agenda = json.loads(dati_agenda)
+    return agenda
+
 
 def clear_dbfile():
     fp = open('agenda.dat', 'w')
@@ -74,7 +103,7 @@ def main_menu():
     elif (cmd == '2'):
         stampa()
     elif (cmd == '3'):
-        inserisci()
+        modifica()
     elif (cmd == '10'):
         cancella()
     elif (cmd == '11'):
